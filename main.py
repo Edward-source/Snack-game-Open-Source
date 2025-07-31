@@ -1,54 +1,68 @@
-from snack import *
-from food import *
-from premiumfood import *
-from GameInit import *
+from snack import Snake
+from food import Food
+from premiumfood import PremiumFood
+from GameInit import SCREEN_SIZE, drawGrid
+import pygame
 
-def GameMain():
-    pygame.init()
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
 
-    surface = pygame.Surface(screen.get_size())
-    surface=surface.convert()
-    drawGrid(surface)
+class Game:
+    def __init__(self):
+        pygame.init()
+        self.clock = pygame.time.Clock()
+        self.screen = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
+        self.surface = pygame.Surface(self.screen.get_size()).convert()
+        drawGrid(self.surface)
 
-    snack = Snake()
-    food = Food()
-    bigFood = PremiumFood()
+        self.snake = Snake()
+        self.food = Food()
+        self.big_food = PremiumFood()
 
-    myfrond = pygame.font.SysFont("monospace", 16)
-    score = 0
-    bigScore = 0
+        self.font = pygame.font.SysFont("monospace", 16)
+        self.score = 0
+        self.big_score = 0
+        self.running = True
 
-    running = True
-    while running:
-        clock.tick(10)
-        snack.handle_keys()
-        drawGrid(surface)
-        # handle ebents
-        snack.move()
-        if snack.get_head_position() == food.position:
-            snack.length +=1
-            score +=1
-            bigScore = bigScore+score
-            food.randomize_position()
+    def handle_food_collision(self):
+        if self.snake.getHeadPosition() == self.food.position:
+            self.snake.length += 1
+            self.score += 1
+            self.big_score += self.score
+            self.food.randomize_position()
 
-        if score %5 == 0:
-            bigFood.draw(surface)
-            if snack.get_head_position() == bigFood.position:
-              snack.length-=3
-              score+=29
-              bigFood.randomize_position()
-        if bigScore > 40:
-            print(" Game killer !!!......")
-                   
-         
-        snack.draw(surface)
-        food.draw(surface)
-       
-        screen.blit(surface, (0,0))
-        text = myfrond.render(f"Score {score}", 1, (0,0,0))
-        screen.blit(text, (5,10))
+    def handle_premium_food(self):
+        if self.score % 5 == 0:
+            self.big_food.draw(self.surface)
+            if self.snake.getHeadPosition() == self.big_food.position:
+                self.snake.length = max(1, self.snake.length - 3)
+                self.score += 5
+                self.big_food.randomize_position()
+
+    def draw_ui(self):
+        drawGrid(self.surface)
+        self.snake.draw(self.surface)
+        self.food.draw(self.surface)
+        self.screen.blit(self.surface, (0, 0))
+
+        score_text = self.font.render(f"Score {self.score}", True, (0, 0, 0))
+        self.screen.blit(score_text, (5, 10))
         pygame.display.update()
 
-GameMain()
+    def run(self):
+        while self.running:
+            self.clock.tick(10)
+            self.snake.handleKeys()
+            self.snake.move()
+
+            self.handle_food_collision()
+            self.handle_premium_food()
+
+            if self.big_score > 10:
+               import sys
+               exit()
+
+            self.draw_ui()
+
+
+if __name__ == "__main__":
+    game = Game()
+    game.run()

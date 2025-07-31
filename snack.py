@@ -1,13 +1,13 @@
 from game import *
 
-class Snake(object):
-    def __init__(self):
+class Snake:
+    def __init__(self)->None:
         self.length =1
         self.positions = [((SCREEN_WIDTH/2), (SCREEN_HEIGHT/2))]
         self.direction = random.choice([UP,DOWN, LEFT, RIGHT])
         self.color =(17,24,47)
 
-    def get_head_position(self):
+    def getHeadPosition(self):
         return self.positions[0]
 
     def turn(self, point):
@@ -16,7 +16,7 @@ class Snake(object):
         else: self.direction = point
 
     def move(self):
-        cur = self.get_head_position()
+        cur = self.getHeadPosition()
         x,y = self.direction
         new = (((cur[0]+(x*GRIDSIZE))%SCREEN_WIDTH), (cur[1]+(y*GRIDSIZE))%SCREEN_HEIGHT)
         if len(self.positions) > 2 and new in self.positions[2:]:
@@ -37,7 +37,7 @@ class Snake(object):
             pygame.draw.rect(surface, self.color, r)
             pygame.draw.rect(surface, (93,216, 228), r, 1)
 
-    def handle_keys(self):
+    def handleKeys(self)->None:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()

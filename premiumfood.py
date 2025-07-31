@@ -1,6 +1,6 @@
 from game import *
 
-class PremiumFood(object):
+class PremiumFood:
     def __init__(self):
         self.position = (0,0)
         self.color = (125, 163, 49)
